@@ -11,7 +11,7 @@ const Header = () => {
 			<nav className="flex gap-2">
 				{userInfo && (
 					<>
-						<Link>{userInfo.username}</Link>
+						<Link to="/create">{userInfo.username}</Link>
 						<button onClick={() => logout()}>Logout</button>
 					</>
 				)}

@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
@@ -34,28 +35,40 @@ const CreatePostPage = () => {
 	const titleRef = useRef();
 	const summaryRef = useRef();
 	const contentRef = useRef();
-	const imageRef = useRef();
+	const imageFileRef = useRef();
+
+	const navigate = useNavigate();
 
 	const createPostHandler = async e => {
 		e.preventDefault();
 		const title = titleRef.current?.value;
 		const summary = summaryRef.current?.value;
-		const image = imageRef.current?.files[0];
+		const imageFile = imageFileRef.current?.files[0];
 		const content = contentRef.current?.value;
 
 		const dataForm = new FormData();
 		dataForm.set("title", title);
 		dataForm.set("summary", summary);
-		dataForm.set("image", image);
+		dataForm.set("imageFile", imageFile);
 		dataForm.set("content", content);
 
-		const response = await fetch("http://localhost:4000/post", {
-			method: "POST",
-			body: dataForm,
-		});
+		try {
+			const response = await fetch("http://localhost:4000/post", {
+				method: "POST",
+				body: dataForm,
+				credentials: "include",
+			});
+
+			const data = await response.json();
+			if (!response.ok) throw new Error(data);
+
+			navigate("/");
+		} catch (error) {
+			console.log(error.message);
+		}
 	};
 	return (
-		<form onSubmit={createPostHandler}>
+		<form onSubmit={createPostHandler} encType="multipart/form-data">
 			<div className="flex flex-col gap-2">
 				<label className="text-gray-700" htmlFor="title">
 					Title
@@ -90,7 +103,7 @@ const CreatePostPage = () => {
 				<input
 					required
 					type="file"
-					ref={imageRef}
+					ref={imageFileRef}
 					id="image"
 					accept="image/*"
 					className="input"

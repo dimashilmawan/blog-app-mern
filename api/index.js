@@ -2,15 +2,37 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+
 const mongoose = require("mongoose");
 const User = require("./models/User");
+const Post = require("./models/Post");
 
 const privateKey = "uvuahwodajwdnaiwdhaw";
 
 const app = express();
 
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, "uploads/");
+	},
+
+	filename: function (req, file, cb) {
+		cb(
+			null,
+			file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+		);
+	},
+});
+
+const uploadMiddleware = multer({ storage: storage });
+
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cookieParser());
 app.use(express.json());
+app.use("/uploads", express.static(__dirname + "/uploads"));
 
 mongoose.connect(
 	"mongodb+srv://dimas:mReZFoblOwnL7b7B@cluster0.augjlhc.mongodb.net/blog?retryWrites=true&w=majority"
@@ -72,6 +94,32 @@ app.post("/login", async (req, res) => {
 
 app.post("/logout", (req, res) => {
 	res.cookie("token", "").json("logout successful");
+});
+
+app.post("/post", uploadMiddleware.single("imageFile"), async (req, res) => {
+	const { token } = req.cookies;
+	const { title, summary, content } = req.body;
+
+	jwt.verify(token, privateKey, {}, async (err, info) => {
+		if (err) throw new Error("Something went wrong");
+
+		await Post.create({
+			title,
+			summary,
+			content,
+			image: req.file.path,
+			author: info.id,
+		});
+		res.json("Create post successfully");
+	});
+});
+
+app.get("/posts", async (req, res) => {
+	const postsDoc = await Post.find()
+		.populate("author", ["username"])
+		.sort({ createdAt: -1 })
+		.limit(20);
+	res.json({ posts: postsDoc });
 });
 
 app.listen(4000);
