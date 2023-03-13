@@ -54,7 +54,10 @@ app.post("/login", async (req, res) => {
 				{},
 				function (err, token) {
 					if (err) throw new Error("Something went wrong");
-					res.cookie("token", token).json("ok");
+					res.cookie("token", token).json({
+						id: userDoc._id,
+						username,
+					});
 				}
 			);
 		} else {
@@ -65,6 +68,10 @@ app.post("/login", async (req, res) => {
 	} catch (error) {
 		res.status(error.code).json(error.message);
 	}
+});
+
+app.post("/logout", (req, res) => {
+	res.cookie("token", "").json("logout successful");
 });
 
 app.listen(4000);

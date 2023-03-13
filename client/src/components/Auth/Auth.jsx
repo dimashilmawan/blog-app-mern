@@ -1,10 +1,11 @@
 import { useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthContext";
 
 const Auth = ({ loginPage }) => {
+	const { auth } = useAuthContext();
 	const usernameRef = useRef();
 	const passwordRef = useRef();
-	const navigate = useNavigate();
 
 	const isLoginPageText = loginPage ? "Login" : "Register";
 
@@ -21,29 +22,7 @@ const Auth = ({ loginPage }) => {
 		)
 			return;
 
-		try {
-			const url = `http://localhost:4000/${loginPage ? "login" : "register"}`;
-
-			const response = await fetch(url, {
-				method: "POST",
-				body: JSON.stringify({ username, password }),
-				headers: { "Content-Type": "application/json" },
-				credentials: "include",
-			});
-
-			const data = await response.json();
-
-			if (!response.ok) throw new Error(data);
-
-			if (loginPage) {
-				navigate("/");
-			} else {
-				navigate("/login");
-			}
-			console.log(data);
-		} catch (error) {
-			console.log(error.message);
-		}
+		await auth(username, password, loginPage);
 	};
 
 	return (
@@ -63,7 +42,7 @@ const Auth = ({ loginPage }) => {
 						ref={usernameRef}
 						min={4}
 						max={16}
-						className="rounded-md bg-gray-100  px-2 py-2 outline-none focus:ring-1 focus:ring-emerald-600 focus:ring-offset-2"
+						className="input"
 					/>
 				</div>
 				<div className="mt-3 flex flex-col gap-2">
@@ -77,15 +56,10 @@ const Auth = ({ loginPage }) => {
 						ref={passwordRef}
 						min={4}
 						max={16}
-						className="rounded-md bg-gray-100  px-2 py-2 outline-none  focus:ring-1 focus:ring-emerald-600 focus:ring-offset-2"
+						className="input"
 					/>
 				</div>
-				<button
-					className="mt-6 w-full rounded-md bg-emerald-500 p-2 text-center text-lg font-bold text-white outline-none hover:bg-opacity-80 focus:ring-1 focus:ring-emerald-600 focus:ring-offset-2 sm:text-base
-        "
-				>
-					{isLoginPageText}
-				</button>
+				<button className="btn mt-6">{isLoginPageText}</button>
 				<Link
 					className="mt-2 block text-center text-emerald-700 underline underline-offset-2 outline-none focus:font-bold focus:text-emerald-500
         "
