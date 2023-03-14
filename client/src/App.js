@@ -5,7 +5,7 @@ import RegisterPage from "./pages/RegisterPage";
 import Layout from "./components/Layout/Layout";
 import CreatePostPage from "./pages/CreatePostPage";
 import PostPage from "./pages/PostPage";
-import Beler from "./pages/Beler";
+import MyPostsPage from "./pages/MyPostsPage";
 
 const App = () => {
 	return (
@@ -16,7 +16,7 @@ const App = () => {
 				<Route path="/register" element={<RegisterPage />} />
 				<Route path="/create" element={<CreatePostPage />} />
 				<Route path="/post/:id" element={<PostPage />} />
-				<Route path="/beler" element={<Beler />} />
+				<Route path="/my-posts" element={<MyPostsPage />} />
 			</Route>
 		</Routes>
 	);

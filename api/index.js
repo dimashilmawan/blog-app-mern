@@ -68,6 +68,7 @@ app.post("/login", async (req, res) => {
 		}
 
 		const passwordIsValid = bcrypt.compareSync(password, userDoc.password);
+		console.log(typeof userDoc._id);
 
 		if (passwordIsValid) {
 			jwt.sign(
@@ -98,6 +99,7 @@ app.post("/logout", (req, res) => {
 
 app.post("/post", uploadMiddleware.single("imageFile"), async (req, res) => {
 	const { token } = req.cookies;
+	// console.log(token);
 	const { title, summary, content } = req.body;
 
 	jwt.verify(token, privateKey, {}, async (err, info) => {
@@ -119,6 +121,7 @@ app.get("/posts", async (req, res) => {
 		.populate("author", ["username"])
 		.sort({ createdAt: -1 })
 		.limit(20);
+
 	res.status(200).json({ posts: postsDoc });
 });
 
@@ -126,6 +129,17 @@ app.get("/post/:id", async (req, res) => {
 	const { id } = req.params;
 	const postDoc = await Post.findById(id).populate("author", ["username"]);
 	res.status(200).json({ post: postDoc });
+});
+
+app.get("/my-posts", async (req, res) => {
+	const { token } = req.cookies;
+
+	jwt.verify(token, privateKey, {}, async (err, info) => {
+		if (err) throw new Error("Something went wrong");
+
+		const myPosts = await Post.find({ author: info.id });
+		res.status(200).json({ myPosts });
+	});
 });
 
 app.listen(4000);
