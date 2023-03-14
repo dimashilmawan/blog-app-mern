@@ -17,6 +17,7 @@ const Posts = () => {
 				setIsLoading(false);
 				setPosts(data.posts);
 			} catch (error) {
+				setIsLoading(false);
 				console.log(error.message);
 			}
 		};
@@ -24,13 +25,15 @@ const Posts = () => {
 		sendRequest();
 	}, []);
 
+	if (isLoading && posts.length === 0)
+		return (
+			<div className="mt-32 grid h-full place-items-center">
+				<ClipLoader color="#10b981" size={64} />
+			</div>
+		);
+
 	return (
-		<ul className="grid h-full gap-y-3 ">
-			{isLoading && posts.length === 0 && (
-				<div className="mt-32 grid h-full place-items-center">
-					<ClipLoader color="#10b981" size={64} />
-				</div>
-			)}
+		<ul className="grid gap-y-3 ">
 			{posts.length > 0 &&
 				!isLoading &&
 				posts.map(post => <PostItem key={post._id} {...post} />)}

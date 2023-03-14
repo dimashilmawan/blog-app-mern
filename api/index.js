@@ -76,7 +76,7 @@ app.post("/login", async (req, res) => {
 				{},
 				function (err, token) {
 					if (err) throw new Error("Something went wrong");
-					res.cookie("token", token).json({
+					res.cookie("token", token).status(200).json({
 						id: userDoc._id,
 						username,
 					});
@@ -93,7 +93,7 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-	res.cookie("token", "").json("logout successful");
+	res.cookie("token", "").status(200).json("logout successful");
 });
 
 app.post("/post", uploadMiddleware.single("imageFile"), async (req, res) => {
@@ -110,7 +110,7 @@ app.post("/post", uploadMiddleware.single("imageFile"), async (req, res) => {
 			image: req.file.path,
 			author: info.id,
 		});
-		res.json("Create post successfully");
+		res.status(201).json("Create post successfully");
 	});
 });
 
@@ -119,7 +119,13 @@ app.get("/posts", async (req, res) => {
 		.populate("author", ["username"])
 		.sort({ createdAt: -1 })
 		.limit(20);
-	res.json({ posts: postsDoc });
+	res.status(200).json({ posts: postsDoc });
+});
+
+app.get("/post/:id", async (req, res) => {
+	const { id } = req.params;
+	const postDoc = await Post.findById(id).populate("author", ["username"]);
+	res.status(200).json({ post: postDoc });
 });
 
 app.listen(4000);

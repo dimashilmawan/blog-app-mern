@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -8,34 +8,27 @@ const modules = {
 		[{ header: [1, 2, false] }],
 		["bold", "italic", "underline", "strike", "blockquote"],
 		[
+			{ align: "" },
+			{ align: "center" },
+			{ align: "right" },
+			{ align: "justify" },
+		],
+		[
 			{ list: "ordered" },
 			{ list: "bullet" },
 			{ indent: "-1" },
 			{ indent: "+1" },
 		],
-		["link"],
+		["link", "image"],
 		["clean"],
 	],
 };
 
-const formats = [
-	"header",
-	"bold",
-	"italic",
-	"underline",
-	"strike",
-	"blockquote",
-	"list",
-	"bullet",
-	"indent",
-	"link",
-];
-
 const CreatePostPage = () => {
 	const titleRef = useRef();
 	const summaryRef = useRef();
-	const contentRef = useRef();
 	const imageFileRef = useRef();
+	const [content, setContent] = useState();
 
 	const navigate = useNavigate();
 
@@ -44,7 +37,7 @@ const CreatePostPage = () => {
 		const title = titleRef.current?.value;
 		const summary = summaryRef.current?.value;
 		const imageFile = imageFileRef.current?.files[0];
-		const content = contentRef.current?.value;
+		// const content = contentRef.current?.value;
 
 		const dataForm = new FormData();
 		dataForm.set("title", title);
@@ -115,10 +108,12 @@ const CreatePostPage = () => {
 				</label>
 				<ReactQuill
 					theme="snow"
-					ref={contentRef}
+					// ref={contentRef}
+					value={content}
+					onChange={setContent}
 					id="content"
 					modules={modules}
-					formats={formats}
+					// formats={formats}
 				/>
 			</div>
 
