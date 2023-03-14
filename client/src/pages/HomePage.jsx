@@ -15,7 +15,7 @@ const HomePage = () => {
 				if (!response.ok) throw new Error(data);
 
 				setIsLoading(false);
-				setPosts(data.posts);
+				setPosts(data);
 			} catch (error) {
 				setIsLoading(false);
 				console.log(error.message);

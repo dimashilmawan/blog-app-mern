@@ -1,6 +1,6 @@
-import Auth from "../components/Auth/Auth";
+import AuthForm from "../components/Auth/AuthForm";
 
 const RegisterPage = () => {
-	return <Auth />;
+	return <AuthForm />;
 };
 export default RegisterPage;

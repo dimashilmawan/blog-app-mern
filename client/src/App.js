@@ -4,7 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import Layout from "./components/Layout/Layout";
 import CreatePostPage from "./pages/CreatePostPage";
-import PostPage from "./pages/PostPage";
+import PostDetailPage from "./pages/PostDetailPage";
 import MyPostsPage from "./pages/MyPostsPage";
 
 const App = () => {
@@ -15,7 +15,7 @@ const App = () => {
 				<Route path="/login" element={<LoginPage />} />
 				<Route path="/register" element={<RegisterPage />} />
 				<Route path="/create" element={<CreatePostPage />} />
-				<Route path="/post/:id" element={<PostPage />} />
+				<Route path="/post/:id" element={<PostDetailPage />} />
 				<Route path="/my-posts" element={<MyPostsPage />} />
 			</Route>
 		</Routes>

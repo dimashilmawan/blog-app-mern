@@ -1,9 +1,12 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import ClipLoader from "react-spinners/ClipLoader";
 import { useAuthContext } from "../../context/AuthContext";
 
-const Auth = ({ loginPage }) => {
-	const { auth } = useAuthContext();
+const AuthForm = ({ loginPage }) => {
+	const { login, register } = useAuthContext();
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState(null);
 	const usernameRef = useRef();
 	const passwordRef = useRef();
 
@@ -13,7 +16,6 @@ const Auth = ({ loginPage }) => {
 		e.preventDefault();
 		const username = usernameRef.current.value;
 		const password = passwordRef.current.value;
-
 		if (
 			username == null ||
 			username.length === 0 ||
@@ -22,8 +24,27 @@ const Auth = ({ loginPage }) => {
 		)
 			return;
 
-		await auth(username, password, loginPage);
+		setIsLoading(true);
+
+		try {
+			if (loginPage) {
+				await login(username, password);
+			} else {
+				await register(username, password);
+			}
+			setIsLoading(false);
+		} catch (error) {
+			setIsLoading(false);
+			setError(error.message);
+		}
 	};
+
+	if (isLoading)
+		return (
+			<div className="fixed top-0 right-0 z-20 grid h-screen w-full place-items-center ">
+				<ClipLoader color="#10b981" size={64} />
+			</div>
+		);
 
 	return (
 		<div className="mx-auto mt-20 rounded-lg p-4 sm:mt-16 sm:max-w-md">
@@ -60,17 +81,34 @@ const Auth = ({ loginPage }) => {
 					/>
 				</div>
 				<button className="btn mt-6">{isLoginPageText}</button>
+				{error && (
+					<div className="mt-3 w-full rounded-md bg-red-400 p-2 text-center text-lg text-red-100">
+						{error}
+					</div>
+				)}
 				<Link
-					className="mt-2 block text-center text-emerald-700 underline underline-offset-2 outline-none focus:font-bold focus:text-emerald-500
+					className="mt-2 block text-center text-gray-500 focus:font-bold focus:text-emerald-500
         "
 					to={loginPage ? "/register" : "/login"}
 				>
-					{loginPage
-						? "Don't have an account yet? Register "
-						: "Already have an account? Login"}
+					{loginPage ? (
+						<p>
+							Don't have an account yet?
+							<span className="font-semibold text-emerald-600 underline underline-offset-2 outline-none">
+								Register
+							</span>
+						</p>
+					) : (
+						<p>
+							Already have an account?
+							<span className="font-semibold text-emerald-600 underline underline-offset-2 outline-none">
+								Login
+							</span>
+						</p>
+					)}
 				</Link>
 			</form>
 		</div>
 	);
 };
-export default Auth;
+export default AuthForm;

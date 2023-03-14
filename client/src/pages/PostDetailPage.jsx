@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 
-const PostPage = () => {
+const PostDetailPage = () => {
 	const { state: post } = useLocation();
 	// const [post, setPost] = useState(null);
 	// const [isLoading, setIsLoading] = useState(true);
@@ -54,4 +54,4 @@ const PostPage = () => {
 		</div>
 	);
 };
-export default PostPage;
+export default PostDetailPage;
