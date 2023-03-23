@@ -17,7 +17,7 @@ const MyPostsPage = () => {
 				if (!response.ok) throw new Error(data);
 
 				setIsLoading(false);
-				setMyPosts(data.myPosts);
+				setMyPosts(data);
 			} catch (error) {
 				setIsLoading(false);
 				console.log(error.message);

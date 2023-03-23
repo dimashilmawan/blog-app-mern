@@ -43,12 +43,13 @@ const AuthContextProvider = ({ children }) => {
 				method: "POST",
 				body: JSON.stringify({ username, password }),
 				headers: { "Content-Type": "application/json" },
+				credentials: "include",
 			});
 
 			const data = await response.json();
 
 			if (!response.ok) throw new Error(data);
-
+			console.log(data);
 			setUserInfo(data);
 
 			localStorage.setItem("userInfo", JSON.stringify(data));

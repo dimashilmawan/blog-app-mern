@@ -123,6 +123,34 @@ app.post("/post", uploadMiddleware.single("imageFile"), async (req, res) => {
 	}
 });
 
+app.put("/post", uploadMiddleware.single("imageFile"), async (req, res) => {
+	const { token } = req.cookies;
+	const { id, title, summary, content } = req.body;
+
+	try {
+		const info = await promisify(jwt.verify)(token, privateKey);
+
+		const postDoc = await Post.findById(id);
+		if (!postDoc) throw new Error("Document not found");
+
+		const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+
+		if (!isAuthor) throw new Error("You're not the author");
+
+		await Post.findByIdAndUpdate(id, {
+			title,
+			summary,
+			content,
+			image: req.file ? req.file.path : postDoc.image,
+		});
+
+		res.status(201).json("Edit post successfully");
+	} catch (error) {
+		console.log(error.name);
+		res.status(500).json(error.message);
+	}
+});
+
 app.get("/posts", async (req, res) => {
 	try {
 		const postsDoc = await Post.find()
@@ -153,7 +181,10 @@ app.get("/my-posts", async (req, res) => {
 	try {
 		const info = await promisify(jwt.verify)(token, privateKey);
 
-		const myPosts = await Post.find({ author: info.id });
+		const myPosts = await Post.find({ author: info.id })
+			.populate("author", ["username"])
+			.sort({ createdAt: -1 })
+			.limit(20);
 
 		res.status(200).json(myPosts);
 	} catch (error) {
